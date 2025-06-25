@@ -9,6 +9,7 @@ import { PlasticScanner } from '@/components/scanner/PlasticScanner';
 import { CommunityHub } from '@/components/community/CommunityHub';
 import { EducationalContent } from '@/components/education/EducationalContent';
 import { AIAssistant } from '@/components/chat/AIAssistant';
+import { UserProfile } from '@/components/profile/UserProfile';
 
 const AuthWrapper: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,10 +17,10 @@ const AuthWrapper: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading ReuScan...</p>
+          <div className="animate-spin rounded-full h-16 w-16 md:h-32 md:w-32 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 text-sm md:text-base">Loading ReuScan...</p>
         </div>
       </div>
     );
@@ -27,7 +28,7 @@ const AuthWrapper: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="max-w-md w-full">
           {isLogin ? (
             <LoginForm onToggleMode={() => setIsLogin(false)} />
@@ -57,15 +58,17 @@ const MainApp: React.FC = () => {
         return <EducationalContent />;
       case 'chat':
         return <AIAssistant />;
+      case 'profile':
+        return <UserProfile />;
       default:
         return <UserDashboard />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-full">
       <Header currentView={currentView} onViewChange={setCurrentView} />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {renderCurrentView()}
       </main>
     </div>

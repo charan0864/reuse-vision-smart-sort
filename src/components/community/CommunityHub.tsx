@@ -24,13 +24,7 @@ export const CommunityHub: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('community_submissions')
-        .select(`
-          *,
-          profiles!community_submissions_user_id_fkey (
-            username,
-            full_name
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
@@ -76,25 +70,28 @@ export const CommunityHub: React.FC = () => {
       itemName,
       description,
       classification,
-      imageUrl: '/placeholder.svg', // In real app, would upload actual image
+      imageUrl: '/placeholder.svg',
     });
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-0">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-6 w-6" />
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Users className="h-5 w-5 md:h-6 md:w-6" />
             Community Submissions
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-center mb-4">
-            <p className="text-gray-600">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-4">
+            <p className="text-gray-600 text-sm md:text-base">
               Help improve our AI by submitting new items and classifications
             </p>
-            <Button onClick={() => setShowSubmissionForm(!showSubmissionForm)}>
+            <Button 
+              onClick={() => setShowSubmissionForm(!showSubmissionForm)}
+              className="w-full md:w-auto"
+            >
               <Upload className="h-4 w-4 mr-2" />
               Submit Item
             </Button>
@@ -103,7 +100,7 @@ export const CommunityHub: React.FC = () => {
           {showSubmissionForm && (
             <Card className="mb-6">
               <CardHeader>
-                <CardTitle>Submit New Item</CardTitle>
+                <CardTitle className="text-lg">Submit New Item</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,26 +109,34 @@ export const CommunityHub: React.FC = () => {
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     required
+                    className="w-full"
                   />
                   <Input
                     placeholder="Plastic type or classification"
                     value={classification}
                     onChange={(e) => setClassification(e.target.value)}
                     required
+                    className="w-full"
                   />
                   <Textarea
                     placeholder="Description and recycling notes"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    className="w-full min-h-[100px]"
                   />
-                  <div className="flex gap-2">
-                    <Button type="submit" disabled={submitItemMutation.isPending}>
+                  <div className="flex flex-col md:flex-row gap-2">
+                    <Button 
+                      type="submit" 
+                      disabled={submitItemMutation.isPending}
+                      className="w-full md:w-auto"
+                    >
                       {submitItemMutation.isPending ? 'Submitting...' : 'Submit'}
                     </Button>
                     <Button 
                       type="button" 
                       variant="outline" 
                       onClick={() => setShowSubmissionForm(false)}
+                      className="w-full md:w-auto"
                     >
                       Cancel
                     </Button>
@@ -145,15 +150,15 @@ export const CommunityHub: React.FC = () => {
             {submissions.map((submission) => (
               <Card key={submission.id}>
                 <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
+                  <div className="flex flex-col md:flex-row md:items-start gap-4">
                     <img
                       src={submission.image_url}
                       alt={submission.item_name}
-                      className="w-16 h-16 object-cover rounded"
+                      className="w-full md:w-16 h-32 md:h-16 object-cover rounded"
                     />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{submission.item_name}</h3>
+                      <div className="flex flex-col md:flex-row md:items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-base md:text-lg">{submission.item_name}</h3>
                         {submission.verified && (
                           <Badge variant="default">Verified</Badge>
                         )}
@@ -166,9 +171,9 @@ export const CommunityHub: React.FC = () => {
                           {submission.description}
                         </p>
                       )}
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <span className="text-xs text-gray-500">
-                          Submitted by {submission.profiles?.username || submission.profiles?.full_name || 'Anonymous'}
+                          Submitted by User
                         </span>
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm" className="h-8 px-2">

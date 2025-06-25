@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Camera, Upload, Scan, Loader2 } from 'lucide-react';
+import { Camera, Upload, Scan, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,8 @@ export const PlasticScanner: React.FC = () => {
   const [preview, setPreview] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<DetectionResult | null>(null);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -34,16 +36,17 @@ export const PlasticScanner: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => setPreview(e.target?.result as string);
       reader.readAsDataURL(file);
+      setCameraActive(false);
+      stopCamera();
     }
   };
 
   const simulateAIDetection = (imageData: string): Promise<DetectionResult> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        // Simulate AI detection with random results for demo
         const plasticTypes = ['PET', 'HDPE', 'PVC', 'LDPE', 'PP', 'PS'];
         const randomType = plasticTypes[Math.floor(Math.random() * plasticTypes.length)];
-        const confidence = Math.floor(Math.random() * 30) + 70; // 70-100%
+        const confidence = Math.floor(Math.random() * 30) + 70;
         
         const results: Record<string, DetectionResult> = {
           PET: {
@@ -82,11 +85,9 @@ export const PlasticScanner: React.FC = () => {
 
     setIsScanning(true);
     try {
-      // Simulate AI detection
       const detectionResult = await simulateAIDetection(preview!);
       setResult(detectionResult);
 
-      // Save scan to database
       const { error } = await supabase
         .from('scan_history')
         .insert({
@@ -101,7 +102,6 @@ export const PlasticScanner: React.FC = () => {
 
       if (error) throw error;
 
-      // Update user stats
       await supabase.rpc('update_user_stats', {
         p_user_id: user.id,
         p_eco_points: detectionResult.ecoPoints,
@@ -126,17 +126,38 @@ export const PlasticScanner: React.FC = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        } 
+      });
+      
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.srcObject = mediaStream;
+        setStream(mediaStream);
+        setCameraActive(true);
+        setPreview(null);
+        setSelectedFile(null);
+        setResult(null);
       }
     } catch (error) {
+      console.error('Camera error:', error);
       toast({
         title: "Camera Error",
         description: "Unable to access camera. Please use file upload instead.",
         variant: "destructive",
       });
     }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setCameraActive(false);
   };
 
   const capturePhoto = () => {
@@ -152,6 +173,7 @@ export const PlasticScanner: React.FC = () => {
             const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
             setSelectedFile(file);
             setPreview(canvasRef.current!.toDataURL());
+            stopCamera();
           }
         });
       }
@@ -159,11 +181,11 @@ export const PlasticScanner: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-0">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Scan className="h-6 w-6" />
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+            <Scan className="h-5 w-5 md:h-6 md:w-6" />
             AI Plastic Scanner
           </CardTitle>
         </CardHeader>
@@ -172,17 +194,17 @@ export const PlasticScanner: React.FC = () => {
             <Button
               onClick={() => fileInputRef.current?.click()}
               variant="outline"
-              className="h-32 flex flex-col items-center justify-center gap-2"
+              className="h-24 md:h-32 flex flex-col items-center justify-center gap-2 text-sm md:text-base"
             >
-              <Upload className="h-8 w-8" />
+              <Upload className="h-6 w-6 md:h-8 md:w-8" />
               Upload Image
             </Button>
             <Button
               onClick={startCamera}
               variant="outline"
-              className="h-32 flex flex-col items-center justify-center gap-2"
+              className="h-24 md:h-32 flex flex-col items-center justify-center gap-2 text-sm md:text-base"
             >
-              <Camera className="h-8 w-8" />
+              <Camera className="h-6 w-6 md:h-8 md:w-8" />
               Use Camera
             </Button>
           </div>
@@ -195,12 +217,34 @@ export const PlasticScanner: React.FC = () => {
             className="hidden"
           />
 
-          <video ref={videoRef} autoPlay className="hidden w-full rounded-lg" />
+          {cameraActive && (
+            <div className="relative">
+              <video 
+                ref={videoRef} 
+                autoPlay 
+                playsInline
+                className="w-full rounded-lg max-h-[400px] object-cover"
+              />
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                <Button onClick={capturePhoto} size="lg">
+                  Capture Photo
+                </Button>
+                <Button onClick={stopCamera} variant="outline" size="lg">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
           <canvas ref={canvasRef} className="hidden" />
 
-          {preview && (
+          {preview && !cameraActive && (
             <div className="space-y-4">
-              <img src={preview} alt="Selected" className="w-full max-w-md mx-auto rounded-lg" />
+              <img 
+                src={preview} 
+                alt="Selected" 
+                className="w-full max-w-md mx-auto rounded-lg object-cover max-h-[400px]" 
+              />
               <Button 
                 onClick={scanImage} 
                 disabled={isScanning}
@@ -221,36 +265,36 @@ export const PlasticScanner: React.FC = () => {
           {result && (
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle className="text-lg">Scan Results</CardTitle>
+                <CardTitle className="text-base md:text-lg">Scan Results</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Plastic Type:</span>
-                  <Badge variant={result.recyclable ? "default" : "destructive"}>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <span className="font-medium text-sm md:text-base">Plastic Type:</span>
+                  <Badge variant={result.recyclable ? "default" : "destructive"} className="w-fit">
                     {result.plasticType}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Confidence:</span>
-                  <span>{result.confidence}%</span>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <span className="font-medium text-sm md:text-base">Confidence:</span>
+                  <span className="text-sm md:text-base">{result.confidence}%</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Recyclable:</span>
-                  <Badge variant={result.recyclable ? "default" : "destructive"}>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                  <span className="font-medium text-sm md:text-base">Recyclable:</span>
+                  <Badge variant={result.recyclable ? "default" : "destructive"} className="w-fit">
                     {result.recyclable ? "Yes" : "No"}
                   </Badge>
                 </div>
                 <div>
-                  <p className="font-medium mb-1">Recycling Instructions:</p>
-                  <p className="text-sm text-gray-600">{result.instructions}</p>
+                  <p className="font-medium mb-1 text-sm md:text-base">Recycling Instructions:</p>
+                  <p className="text-xs md:text-sm text-gray-600">{result.instructions}</p>
                 </div>
                 <div>
-                  <p className="font-medium mb-1">Environmental Impact:</p>
-                  <p className="text-sm text-gray-600">{result.environmentalImpact}</p>
+                  <p className="font-medium mb-1 text-sm md:text-base">Environmental Impact:</p>
+                  <p className="text-xs md:text-sm text-gray-600">{result.environmentalImpact}</p>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                  <span className="font-medium text-green-700">Eco-Points Earned:</span>
-                  <span className="font-bold text-green-700">+{result.ecoPoints}</span>
+                  <span className="font-medium text-green-700 text-sm md:text-base">Eco-Points Earned:</span>
+                  <span className="font-bold text-green-700 text-sm md:text-base">+{result.ecoPoints}</span>
                 </div>
               </CardContent>
             </Card>
