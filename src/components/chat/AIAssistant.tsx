@@ -19,104 +19,269 @@ export const AIAssistant: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const generateAIResponse = (userMessage: string, conversationHistory: Message[] = []): string => {
+  // Comprehensive plastic knowledge base
+  const plasticDatabase = {
+    // Plastic type 1 - PET
+    pet: {
+      name: 'PET (Polyethylene Terephthalate)',
+      code: '1',
+      recyclable: true,
+      commonUses: ['Water bottles', 'Soda bottles', 'Food containers', 'Peanut butter jars', 'Salad dressing bottles'],
+      recyclingProcess: 'PET is highly recyclable and can be turned into new bottles, clothing fibers, carpets, and other products.',
+      preparation: 'Remove caps and labels, rinse thoroughly to remove any food residue.',
+      facts: 'PET bottles can be recycled into polar fleece jackets, carpeting, and new bottles.',
+      environmentalImpact: 'Recycling PET saves 60% of the energy needed to make virgin PET.'
+    },
+    
+    // Plastic type 2 - HDPE
+    hdpe: {
+      name: 'HDPE (High-Density Polyethylene)',
+      code: '2',
+      recyclable: true,
+      commonUses: ['Milk jugs', 'Laundry detergent bottles', 'Shampoo bottles', 'Butter containers', 'Cereal box liners'],
+      recyclingProcess: 'HDPE is easily recyclable and widely accepted in curbside programs.',
+      preparation: 'Remove caps, rinse containers, and ensure they are clean and dry.',
+      facts: 'HDPE can be recycled into new bottles, plastic lumber, and park benches.',
+      environmentalImpact: 'Recycling HDPE uses 88% less energy than producing new HDPE from raw materials.'
+    },
+    
+    // Plastic type 3 - PVC
+    pvc: {
+      name: 'PVC (Polyvinyl Chloride)',
+      code: '3',
+      recyclable: false,
+      commonUses: ['Pipes', 'Window frames', 'Credit cards', 'Some food packaging', 'Vinyl siding'],
+      recyclingProcess: 'PVC is rarely accepted in curbside recycling due to chlorine content and processing challenges.',
+      preparation: 'Check for specialized PVC recycling programs in your area.',
+      facts: 'PVC contains chlorine and can release toxic chemicals when burned or processed improperly.',
+      environmentalImpact: 'PVC production and disposal can release harmful chemicals into the environment.'
+    },
+    
+    // Plastic type 4 - LDPE
+    ldpe: {
+      name: 'LDPE (Low-Density Polyethylene)',
+      code: '4',
+      recyclable: true,
+      commonUses: ['Plastic bags', 'Food wraps', 'Squeezable bottles', 'Bread bags', 'Frozen food bags'],
+      recyclingProcess: 'LDPE films require special collection points, not curbside pickup.',
+      preparation: 'Take plastic bags and films to store drop-off locations.',
+      facts: 'LDPE films can be recycled into composite lumber, trash bags, and new plastic bags.',
+      environmentalImpact: 'Recycling LDPE helps reduce the billions of plastic bags that end up in landfills annually.'
+    },
+    
+    // Plastic type 5 - PP
+    pp: {
+      name: 'PP (Polypropylene)',
+      code: '5',
+      recyclable: true,
+      commonUses: ['Yogurt containers', 'Bottle caps', 'Straws', 'Medicine bottles', 'Chip bags'],
+      recyclingProcess: 'PP acceptance is growing in recycling programs across the country.',
+      preparation: 'Clean containers thoroughly and check local guidelines for acceptance.',
+      facts: 'PP can be recycled into clothing fibers, carpets, and automotive parts.',
+      environmentalImpact: 'PP recycling helps reduce landfill waste and conserves petroleum resources.'
+    },
+    
+    // Plastic type 6 - PS
+    ps: {
+      name: 'PS (Polystyrene)',
+      code: '6',
+      recyclable: false,
+      commonUses: ['Disposable cups', 'Takeout containers', 'Foam packaging', 'Egg cartons', 'Insulation'],
+      recyclingProcess: 'PS is difficult to recycle and not accepted in most curbside programs.',
+      preparation: 'Look for specialized polystyrene recycling programs or reduce usage.',
+      facts: 'PS takes hundreds of years to decompose and often breaks into microplastics.',
+      environmentalImpact: 'PS is a major contributor to ocean plastic pollution and microplastic contamination.'
+    },
+    
+    // Plastic type 7 - Other
+    other: {
+      name: 'Other Plastics (Mixed)',
+      code: '7',
+      recyclable: false,
+      commonUses: ['Some water bottles', 'Sunglasses', 'DVDs', 'Mixed plastic items', 'Complex packaging'],
+      recyclingProcess: 'Type 7 plastics are mixed compositions and generally not recyclable.',
+      preparation: 'Check with local facilities for specific Type 7 recycling options.',
+      facts: 'Type 7 includes polycarbonate, which may contain BPA.',
+      environmentalImpact: 'Mixed plastics are challenging to recycle and often end up in landfills.'
+    }
+  };
+
+  const generateAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
     
-    // Enhanced knowledge base with more comprehensive responses
-    const knowledgeBase = {
-      // Plastic types and recycling
-      plastic: {
-        keywords: ['plastic', 'polymer', 'recycling', 'bottle', 'container', 'type', 'pet', 'hdpe', 'pvc', 'ldpe', 'pp', 'ps'],
-        responses: [
-          "Great question about plastic! Here's what you need to know:\n\n🔢 **Plastic Types:**\n• Type 1 (PET): Water bottles, food containers - Highly recyclable\n• Type 2 (HDPE): Milk jugs, detergent bottles - Easy to recycle\n• Type 3 (PVC): Pipes, credit cards - Limited recycling\n• Type 4 (LDPE): Plastic bags, squeezable bottles - Some recycling\n• Type 5 (PP): Yogurt containers, bottle caps - Increasingly recyclable\n• Type 6 (PS): Disposable cups, foam packaging - Difficult to recycle\n• Type 7 (Other): Mixed plastics - Varies by composition\n\n💡 **Pro Tip:** Look for the recycling number inside the triangular symbol on plastic items!",
-          "Plastic recycling is crucial for our environment! Did you know that:\n\n♻️ Only 9% of all plastic ever produced has been recycled\n🌊 Every minute, a garbage truck of plastic enters our oceans\n🔄 Recycling 1 ton of plastic saves 2,000 pounds of CO2\n\n**What you can do:**\n• Always check the recycling number before disposing\n• Clean containers before recycling\n• Reduce single-use plastics when possible\n• Choose products with minimal packaging",
-          "Understanding plastic types helps you recycle better!\n\n🥤 **PET (Type 1):** Water bottles, soda bottles - Most recyclable\n🥛 **HDPE (Type 2):** Milk jugs, shampoo bottles - Very recyclable\n🚿 **PVC (Type 3):** Shower curtains, pipes - Rarely recyclable\n🛍️ **LDPE (Type 4):** Shopping bags, food wraps - Special collection\n🧴 **PP (Type 5):** Yogurt cups, bottle caps - Growing acceptance\n☕ **PS (Type 6):** Coffee cups, takeout containers - Difficult\n🔄 **Other (Type 7):** Mixed plastics - Check locally"
-        ]
-      },
-      
-      // Recycling general
-      recycle: {
-        keywords: ['recycle', 'recycling', 'reuse', 'reduce', 'waste', 'bin', 'disposal'],
-        responses: [
-          "Recycling is one of the most impactful things you can do for the environment! Here's your complete guide:\n\n🗂️ **The 3 R's Priority:**\n1. **REDUCE** - Buy less, choose durable items\n2. **REUSE** - Find new purposes for items\n3. **RECYCLE** - Process materials into new products\n\n📋 **What to Recycle:**\n✅ Paper, cardboard, magazines\n✅ Glass bottles and jars\n✅ Metal cans (aluminum, steel)\n✅ Plastic bottles and containers (check number)\n\n❌ **What NOT to Recycle:**\n• Plastic bags (take to store drop-off)\n• Food-contaminated items\n• Broken glass\n• Electronics (special e-waste centers)",
-          "Smart recycling makes a real difference! Here are some pro tips:\n\n🧽 **Preparation Tips:**\n• Rinse containers to remove food residue\n• Remove caps from bottles (unless specifically requested)\n• Separate materials when required\n• Don't bag recyclables unless instructed\n\n🌍 **Impact Facts:**\n• Recycling aluminum cans saves 95% of energy vs. new production\n• One recycled glass bottle powers a light bulb for 4 hours\n• Recycled paper uses 60% less energy than virgin paper",
-          "Let me help you become a recycling expert!\n\n📊 **Recycling Benefits:**\n• Saves natural resources and energy\n• Reduces greenhouse gas emissions\n• Creates jobs in recycling industries\n• Keeps materials out of landfills\n\n🎯 **Best Practices:**\n• Clean containers before recycling\n• Check local recycling guidelines\n• Use ReuScan to identify materials\n• When in doubt, throw it out (contamination hurts recycling)"
-        ]
-      },
-      
-      // Environment and sustainability
-      environment: {
-        keywords: ['environment', 'climate', 'sustainability', 'green', 'eco', 'carbon', 'impact', 'earth'],
-        responses: [
-          "Environmental protection is at the heart of sustainable living! Here's how waste management impacts our planet:\n\n🌍 **Climate Impact:**\n• Landfills produce methane (28x more potent than CO2)\n• Recycling reduces greenhouse gas emissions by 1.1 billion tons annually\n• Composting organic waste prevents methane release\n\n🌊 **Ocean Health:**\n• 8 million tons of plastic enter oceans yearly\n• Microplastics are found in 90% of sea birds\n• Marine animals mistake plastic for food\n\n🌱 **What You Can Do:**\n• Use ReuScan to identify recyclable materials\n• Compost organic waste\n• Choose reusable over disposable\n• Support circular economy products",
-          "Creating a sustainable future starts with individual actions! Here's your environmental action plan:\n\n📊 **Your Carbon Footprint:**\n• Average person generates 4.5 pounds of waste daily\n• Recycling can reduce your carbon footprint by 1,000+ pounds of CO2 annually\n• Composting reduces methane emissions by 25%\n\n🔄 **Circular Economy Benefits:**\n• Keeps materials in use longer\n• Reduces resource extraction\n• Creates green jobs\n• Minimizes environmental impact\n\n💚 **Small Changes, Big Impact:**\n• Bring reusable bags shopping\n• Use a refillable water bottle\n• Buy products with minimal packaging\n• Repair instead of replacing when possible"
-        ]
-      },
-      
-      // Scanning and identification
-      scan: {
-        keywords: ['scan', 'identify', 'camera', 'detection', 'recognize', 'scanner', 'scanning'],
-        responses: [
-          "Great question about scanning! ReuScan's AI can help identify materials and their recycling potential:\n\n📱 **How to Use the Scanner:**\n1. Go to the Scanner tab\n2. Point your camera at the item\n3. Tap the capture button\n4. Get instant recycling information\n\n🎯 **What We Can Identify:**\n• Plastic bottles and containers\n• Metal cans and packaging\n• Glass items\n• Paper and cardboard\n• Electronic components\n\n💡 **Scanner Tips:**\n• Ensure good lighting\n• Hold camera steady\n• Include any visible recycling symbols\n• Clean items work better for detection",
-          "The scanner is your personal recycling assistant! Here's how to get the best results:\n\n🔍 **Best Practices:**\n• Hold item 6-12 inches from camera\n• Ensure recycling symbols are visible\n• Avoid shadows and glare\n• Multiple angles can help identification\n\n📋 **After Scanning:**\n• Review the recycling category\n• Check local recycling guidelines\n• Submit to community feed\n• Learn from the detailed information provided\n\n🏆 **Pro Tip:** Regular scanning builds your eco-knowledge and helps improve our AI!",
-          "Our scanning technology uses advanced AI to identify materials:\n\n🤖 **How It Works:**\n• Computer vision analyzes item features\n• Machine learning compares to vast database\n• Provides plastic type and recycling info\n• Offers disposal recommendations\n\n📸 **For Best Results:**\n• Use good lighting conditions\n• Clean the item before scanning\n• Include any text or symbols\n• Try different angles if needed\n\n✨ **Accuracy Improvements:**\n• Our AI learns from each scan\n• Community submissions help training\n• Regular updates improve recognition"
-        ]
-      },
-      
-      // Community and sharing
-      community: {
-        keywords: ['community', 'share', 'social', 'feed', 'post', 'submit', 'contribution'],
-        responses: [
-          "The ReuScan community is amazing! Here's how to get involved:\n\n👥 **Community Features:**\n• Share your scanned items\n• See what others are recycling\n• Learn from community tips\n• Earn points for participation\n\n🏆 **Submission Benefits:**\n• Help others learn proper recycling\n• Contribute to AI training\n• Build a database of recyclables\n• Create positive environmental impact\n\n💬 **Community Guidelines:**\n• Share accurate information\n• Be helpful and encouraging\n• Report incorrect data\n• Celebrate recycling wins together!",
-          "Building a sustainable community together! Here's what makes our community special:\n\n🌟 **Why Share Your Scans:**\n• Help others learn proper recycling\n• Build a database of local recyclables\n• Inspire environmental action\n• Create positive impact together\n\n📈 **Track Your Impact:**\n• View your submission history\n• See community engagement\n• Monitor recycling achievements\n• Learn from others' experiences\n\n🎉 **Celebrate Success:**\n• Share your recycling victories\n• Learn from others' experiences\n• Build sustainable habits together\n• Make environmental protection fun!"
-        ]
-      }
-    };
+    // Greetings
+    if (lowerMessage.includes('hi') || lowerMessage.includes('hello') || lowerMessage.includes('hey')) {
+      return "Hello! 👋 I'm your plastic recycling expert. I can help you understand different plastic types, recycling processes, and environmental impacts. What would you like to know about plastics today?";
+    }
 
-    // Context-aware response selection
-    for (const [category, data] of Object.entries(knowledgeBase)) {
-      if (data.keywords.some(keyword => lowerMessage.includes(keyword))) {
-        // Select response based on conversation history to avoid repetition
-        const usedResponses = conversationHistory
-          .filter(msg => msg.role === 'assistant')
-          .map(msg => msg.content);
+    // Specific plastic type queries
+    for (const [key, plastic] of Object.entries(plasticDatabase)) {
+      if (lowerMessage.includes(plastic.code) || 
+          lowerMessage.includes(key) || 
+          lowerMessage.includes(plastic.name.toLowerCase()) ||
+          plastic.commonUses.some(use => lowerMessage.includes(use.toLowerCase()))) {
         
-        const availableResponses = data.responses.filter(response => 
-          !usedResponses.some(used => used.includes(response.substring(0, 50)))
-        );
-        
-        if (availableResponses.length > 0) {
-          return availableResponses[Math.floor(Math.random() * availableResponses.length)];
-        } else {
-          return data.responses[Math.floor(Math.random() * data.responses.length)];
-        }
+        return `**${plastic.name} (Type ${plastic.code})**\n\n` +
+               `♻️ **Recyclable:** ${plastic.recyclable ? 'Yes' : 'No'}\n\n` +
+               `📦 **Common Uses:**\n${plastic.commonUses.map(use => `• ${use}`).join('\n')}\n\n` +
+               `🔄 **Recycling Info:** ${plastic.recyclingProcess}\n\n` +
+               `📋 **Preparation:** ${plastic.preparation}\n\n` +
+               `💡 **Fun Fact:** ${plastic.facts}\n\n` +
+               `🌍 **Environmental Impact:** ${plastic.environmentalImpact}`;
       }
     }
 
-    // Greeting responses
-    const greetings = ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'good evening'];
-    if (greetings.some(greeting => lowerMessage.includes(greeting))) {
-      const greetingResponses = [
-        "Hello! 👋 I'm EcoBot, your personal sustainability assistant. I'm here to help you with:\n\n♻️ Recycling guidance\n🔍 Material identification\n🌍 Environmental tips\n📱 Using ReuScan features\n\nWhat would you like to know about today?",
-        "Hi there! 🌱 Welcome to ReuScan! I'm excited to help you on your sustainability journey. Whether you need help with recycling, want to learn about different materials, or have questions about our app features, I'm here for you!\n\nWhat's on your mind today?",
-        "Hey! 🌍 Great to see you taking action for our planet! I can help you with anything related to waste management, recycling, and sustainable living. Feel free to ask me about specific materials, recycling processes, or how to use ReuScan's features.\n\nHow can I assist you today?"
-      ];
-      return greetingResponses[Math.floor(Math.random() * greetingResponses.length)];
+    // General plastic recycling questions
+    if (lowerMessage.includes('recycle') || lowerMessage.includes('recycling')) {
+      return "♻️ **Plastic Recycling Guide**\n\n" +
+             "**Highly Recyclable (Put in bin):**\n" +
+             "• Type 1 (PET) - Water bottles, food containers\n" +
+             "• Type 2 (HDPE) - Milk jugs, detergent bottles\n\n" +
+             "**Sometimes Recyclable (Check locally):**\n" +
+             "• Type 4 (LDPE) - Plastic bags (store drop-off)\n" +
+             "• Type 5 (PP) - Yogurt containers, bottle caps\n\n" +
+             "**Rarely Recyclable:**\n" +
+             "• Type 3 (PVC) - Pipes, credit cards\n" +
+             "• Type 6 (PS) - Foam containers, disposable cups\n" +
+             "• Type 7 (Other) - Mixed plastics\n\n" +
+             "💡 **Pro Tip:** Always check the number inside the recycling triangle!";
     }
 
-    // Question about app features
-    if (lowerMessage.includes('how') || lowerMessage.includes('what') || lowerMessage.includes('help')) {
-      return "I'm here to help you make the most of ReuScan! 🚀\n\n**I can assist you with:**\n\n📱 **App Features:**\n• How to use the scanner\n• Understanding recycling categories\n• Navigating the community feed\n• Learning about sustainability\n\n♻️ **Recycling Knowledge:**\n• Identifying plastic types\n• Local recycling guidelines\n• Proper preparation methods\n• Environmental impact facts\n\n🌍 **Sustainability Tips:**\n• Reducing waste at home\n• Sustainable shopping habits\n• DIY upcycling projects\n• Energy conservation\n\nJust ask me anything specific, and I'll provide detailed guidance!";
+    // Environmental impact questions
+    if (lowerMessage.includes('environment') || lowerMessage.includes('impact') || lowerMessage.includes('ocean')) {
+      return "🌍 **Plastic's Environmental Impact**\n\n" +
+             "**The Problem:**\n" +
+             "• 8 million tons of plastic enter oceans yearly\n" +
+             "• Only 9% of all plastic ever made has been recycled\n" +
+             "• Plastic takes 450-1000 years to decompose\n" +
+             "• Microplastics are found in 90% of seabirds\n\n" +
+             "**The Solution:**\n" +
+             "• Recycle properly using ReuScan to identify types\n" +
+             "• Reduce single-use plastic consumption\n" +
+             "• Reuse containers when possible\n" +
+             "• Support companies using recycled materials\n\n" +
+             "🔄 **Recycling Benefits:**\n" +
+             "• Saves 60% energy vs. making new plastic\n" +
+             "• Reduces greenhouse gas emissions\n" +
+             "• Keeps plastic out of oceans and landfills";
     }
 
-    // Default helpful response
-    const defaultResponses = [
-      "That's an interesting question! While I specialize in recycling and sustainability topics, I'm always learning. Could you tell me more about what you'd like to know?\n\n🌟 **I'm great at helping with:**\n• Plastic identification and recycling\n• Waste reduction strategies\n• Environmental impact information\n• ReuScan app features\n• Sustainable living tips\n\nWhat specific aspect interests you most?",
-      "I want to make sure I give you the most helpful information! 🎯\n\nI'm particularly knowledgeable about:\n♻️ Recycling processes and guidelines\n🔍 Material identification\n🌍 Environmental sustainability\n📱 Using ReuScan effectively\n\nCould you share more details about what you're looking for? The more specific your question, the better I can help!",
-      "Thanks for your question! I'm constantly learning to better assist with sustainability and recycling topics. 🌱\n\n**Let me help you with:**\n• Specific recycling questions\n• Environmental impact information\n• Sustainable lifestyle tips\n• App feature explanations\n\nFeel free to ask about anything related to waste management, recycling, or environmental protection. What would you like to explore?"
-    ];
-    
-    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    // Preparation and cleaning questions
+    if (lowerMessage.includes('clean') || lowerMessage.includes('prepare') || lowerMessage.includes('wash')) {
+      return "🧽 **How to Prepare Plastics for Recycling**\n\n" +
+             "**General Steps:**\n" +
+             "1. Empty all contents completely\n" +
+             "2. Rinse with water to remove food residue\n" +
+             "3. Remove caps and lids (recycle separately if accepted)\n" +
+             "4. Remove labels if they don't come off easily during washing\n" +
+             "5. Let dry before placing in recycling bin\n\n" +
+             "**Special Cases:**\n" +
+             "• Peanut butter jars: Scrape out residue, use warm soapy water\n" +
+             "• Yogurt containers: Rinse thoroughly, check if lids are accepted\n" +
+             "• Bottles with narrow necks: Use a bottle brush or add rice and shake\n\n" +
+             "⚠️ **Important:** Contaminated items can ruin entire batches of recycling!";
+    }
+
+    // Plastic bags and films
+    if (lowerMessage.includes('bag') || lowerMessage.includes('film') || lowerMessage.includes('wrap')) {
+      return "🛍️ **Plastic Bags & Films Recycling**\n\n" +
+             "**What Qualifies:**\n" +
+             "• Grocery bags\n" +
+             "• Bread bags\n" +
+             "• Dry cleaning bags\n" +
+             "• Newspaper bags\n" +
+             "• Produce bags\n" +
+             "• Bubble wrap\n" +
+             "• Air pillows from packages\n\n" +
+             "**Where to Recycle:**\n" +
+             "• Grocery store drop-off bins\n" +
+             "• Retail store collection points\n" +
+             "• NOT in curbside recycling bins\n\n" +
+             "**Preparation:**\n" +
+             "• Remove receipts and stickers\n" +
+             "• Make sure bags are clean and dry\n" +
+             "• Bundle together in one bag\n\n" +
+             "🔄 **Second Life:** Recycled into new bags, composite lumber, and outdoor furniture!";
+    }
+
+    // Microplastics questions
+    if (lowerMessage.includes('micro') || lowerMessage.includes('tiny') || lowerMessage.includes('small')) {
+      return "🔬 **Microplastics: The Invisible Problem**\n\n" +
+             "**What are Microplastics:**\n" +
+             "• Plastic pieces smaller than 5mm\n" +
+             "• Come from larger plastic breaking down\n" +
+             "• Released from synthetic clothing and tire wear\n" +
+             "• Found in air, water, food, and our bodies\n\n" +
+             "**Health Concerns:**\n" +
+             "• Can carry toxic chemicals\n" +
+             "• Found in human blood and organs\n" +
+             "• Long-term effects still being studied\n\n" +
+             "**How to Reduce:**\n" +
+             "• Proper plastic recycling and disposal\n" +
+             "• Choose natural fiber clothing when possible\n" +
+             "• Use washing machine microfiber filters\n" +
+             "• Reduce single-use plastic consumption\n" +
+             "• Support plastic pollution reduction policies";
+    }
+
+    // Bioplastics and alternatives
+    if (lowerMessage.includes('bio') || lowerMessage.includes('alternative') || lowerMessage.includes('replace')) {
+      return "🌱 **Plastic Alternatives & Bioplastics**\n\n" +
+             "**Bioplastic Types:**\n" +
+             "• PLA (Polylactic Acid) - Made from corn starch\n" +
+             "• PHA (Polyhydroxyalkanoates) - Produced by bacteria\n" +
+             "• Starch-based plastics - From potato, corn, or cassava\n\n" +
+             "**Important Notes:**\n" +
+             "• Not all bioplastics are biodegradable\n" +
+             "• Many require industrial composting facilities\n" +
+             "• Can contaminate traditional plastic recycling\n\n" +
+             "**Better Alternatives:**\n" +
+             "• Glass containers for storage\n" +
+             "• Stainless steel water bottles\n" +
+             "• Bamboo or wooden utensils\n" +
+             "• Paper bags and cardboard packaging\n" +
+             "• Reusable cloth bags\n\n" +
+             "💡 **Best Approach:** Reduce, reuse, then consider alternatives!";
+    }
+
+    // Scanner usage
+    if (lowerMessage.includes('scan') || lowerMessage.includes('camera') || lowerMessage.includes('identify')) {
+      return "📱 **Using the ReuScan Scanner**\n\n" +
+             "**How to Scan:**\n" +
+             "1. Go to the Scanner tab\n" +
+             "2. Point camera at the plastic item\n" +
+             "3. Ensure good lighting and clear view\n" +
+             "4. Look for recycling symbols on the item\n" +
+             "5. Tap capture to analyze\n\n" +
+             "**For Best Results:**\n" +
+             "• Clean the item before scanning\n" +
+             "• Include any visible recycling numbers\n" +
+             "• Try different angles if needed\n" +
+             "• Ensure recycling symbol is visible\n\n" +
+             "**What You'll Learn:**\n" +
+             "• Plastic type and recycling code\n" +
+             "• Whether it's recyclable in your area\n" +
+             "• How to prepare it for recycling\n" +
+             "• Environmental impact information";
+    }
+
+    // Default response with helpful categories
+    return "🤖 **I'm here to help with plastic recycling!**\n\n" +
+           "**Ask me about:**\n" +
+           "♻️ Specific plastic types (1-7)\n" +
+           "🔍 How to identify plastics\n" +
+           "🧽 Cleaning and preparation\n" +
+           "🌍 Environmental impact\n" +
+           "📱 Using the scanner\n" +
+           "🛍️ Plastic bags and films\n" +
+           "🔬 Microplastics\n" +
+           "🌱 Plastic alternatives\n\n" +
+           "**Examples:**\n" +
+           "• \"What is Type 1 plastic?\"\n" +
+           "• \"How do I recycle yogurt containers?\"\n" +
+           "• \"What's the environmental impact of plastic?\"\n" +
+           "• \"Where can I recycle plastic bags?\"\n\n" +
+           "What would you like to know?";
   };
 
   const handleSend = async () => {
@@ -126,7 +291,6 @@ export const AIAssistant: React.FC = () => {
     const userMessage = input;
     setInput('');
 
-    // Add user message
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -136,9 +300,8 @@ export const AIAssistant: React.FC = () => {
     
     setMessages(prev => [...prev, userMsg]);
 
-    // Generate AI response
     setTimeout(() => {
-      const aiResponse = generateAIResponse(userMessage, messages);
+      const aiResponse = generateAIResponse(userMessage);
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -148,7 +311,7 @@ export const AIAssistant: React.FC = () => {
       
       setMessages(prev => [...prev, aiMsg]);
       setIsLoading(false);
-    }, 1000);
+    }, 800);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -167,7 +330,7 @@ export const AIAssistant: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-6 w-6" />
-          EcoBot Assistant
+          Plastic Recycling Expert
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col p-0">
@@ -175,19 +338,20 @@ export const AIAssistant: React.FC = () => {
           <div className="space-y-4">
             {messages.length === 0 && (
               <div className="text-center text-gray-500 py-8">
-                <Bot className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg font-medium mb-2">Hi! I'm EcoBot 🌱</p>
-                <p className="mb-4">Your intelligent sustainability assistant</p>
+                <Bot className="h-12 w-12 mx-auto mb-4 text-green-600" />
+                <p className="text-lg font-medium mb-2">Hi! I'm your Plastic Expert 🌱</p>
+                <p className="mb-4">Ask me anything about plastic recycling!</p>
                 <div className="text-sm text-left max-w-md mx-auto bg-green-50 p-4 rounded-lg">
-                  <p className="font-medium mb-2">I can help you with:</p>
-                  <ul className="space-y-1">
-                    <li>♻️ Recycling guidance and tips</li>
-                    <li>🔍 Material identification</li>
-                    <li>🌍 Environmental impact information</li>
-                    <li>📱 Using ReuScan features</li>
-                    <li>🌱 Sustainable living advice</li>
+                  <p className="font-medium mb-2 text-green-800">I can help you with:</p>
+                  <ul className="space-y-1 text-green-700">
+                    <li>♻️ Plastic types and recycling codes</li>
+                    <li>🔍 How to identify different plastics</li>
+                    <li>🧽 Proper cleaning and preparation</li>
+                    <li>🌍 Environmental impact facts</li>
+                    <li>📱 Using the ReuScan scanner</li>
+                    <li>🛍️ Plastic bags and film recycling</li>
                   </ul>
-                  <p className="mt-3 text-green-600">Ask me anything about recycling or sustainability!</p>
+                  <p className="mt-3 text-green-600 font-medium">What would you like to learn?</p>
                 </div>
               </div>
             )}
@@ -239,7 +403,7 @@ export const AIAssistant: React.FC = () => {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                       </div>
-                      <span className="text-sm text-gray-500">EcoBot is thinking...</span>
+                      <span className="text-sm text-gray-500">Analyzing...</span>
                     </div>
                   </div>
                 </div>
@@ -254,8 +418,9 @@ export const AIAssistant: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask about recycling, sustainability, or app features..."
+              placeholder="Ask about plastic types, recycling, or environmental impact..."
               disabled={isLoading}
+              className="text-sm"
             />
             <Button 
               onClick={handleSend} 
