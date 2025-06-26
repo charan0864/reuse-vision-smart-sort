@@ -2,101 +2,43 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Leaf, Recycle, Trophy, TrendingUp } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/components/auth/AuthProvider';
+
+// Mock data for scan history since we removed authentication
+const mockRecentScans = [
+  {
+    id: '1',
+    image_url: '/placeholder.svg',
+    plastic_types: { name: 'PET (Polyethylene Terephthalate)', plastic_code: '1', recyclable: true },
+    created_at: new Date().toISOString(),
+    recyclable: true,
+    eco_points_earned: 10
+  },
+  {
+    id: '2',
+    image_url: '/placeholder.svg',
+    plastic_types: { name: 'HDPE (High-Density Polyethylene)', plastic_code: '2', recyclable: true },
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    recyclable: true,
+    eco_points_earned: 12
+  },
+  {
+    id: '3',
+    image_url: '/placeholder.svg',
+    plastic_types: { name: 'PVC (Polyvinyl Chloride)', plastic_code: '3', recyclable: false },
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+    recyclable: false,
+    eco_points_earned: 5
+  }
+];
 
 export const UserDashboard: React.FC = () => {
-  const { user } = useAuth();
-
-  const { data: profile } = useQuery({
-    queryKey: ['profile', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
-  });
-
-  const { data: recentScans } = useQuery({
-    queryKey: ['recent-scans', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('scan_history')
-        .select(`
-          *,
-          plastic_types (
-            name,
-            plastic_code,
-            recyclable
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
-  });
-
-  const stats = [
-    {
-      title: 'Eco Points',
-      value: profile?.eco_points || 0,
-      icon: Trophy,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50'
-    },
-    {
-      title: 'Total Scans',
-      value: profile?.total_scans || 0,
-      icon: TrendingUp,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      title: 'Items Recycled',
-      value: profile?.items_recycled || 0,
-      icon: Recycle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      title: 'CO2 Saved (kg)',
-      value: parseFloat(profile?.co2_saved?.toString() || '0').toFixed(1),
-      icon: Leaf,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50'
-    }
-  ];
-
   return (
     <div className="space-y-6 p-4 md:p-0">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-4 md:p-6">
-              <div className="flex flex-col md:flex-row md:items-center">
-                <div className={`p-2 rounded-lg ${stat.bgColor} mx-auto md:mx-0 mb-2 md:mb-0`}>
-                  <stat.icon className={`h-4 w-4 md:h-6 md:w-6 ${stat.color}`} />
-                </div>
-                <div className="text-center md:text-left md:ml-4">
-                  <p className="text-xs md:text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-lg md:text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="text-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Scan History</h1>
+        <p className="text-gray-600 text-sm md:text-base">
+          View your previous scans and recycling activity
+        </p>
       </div>
 
       <Card>
@@ -104,9 +46,9 @@ export const UserDashboard: React.FC = () => {
           <CardTitle className="text-lg md:text-xl">Recent Scans</CardTitle>
         </CardHeader>
         <CardContent>
-          {recentScans && recentScans.length > 0 ? (
+          {mockRecentScans && mockRecentScans.length > 0 ? (
             <div className="space-y-3">
-              {recentScans.map((scan) => (
+              {mockRecentScans.map((scan) => (
                 <div key={scan.id} className="flex flex-col md:flex-row md:items-center md:justify-between p-3 border rounded-lg gap-3">
                   <div className="flex items-center gap-3">
                     <img 
@@ -127,9 +69,6 @@ export const UserDashboard: React.FC = () => {
                     <Badge variant={scan.recyclable ? "default" : "destructive"} className="text-xs">
                       {scan.recyclable ? "Recyclable" : "Non-recyclable"}
                     </Badge>
-                    <span className="text-xs md:text-sm font-medium text-green-600">
-                      +{scan.eco_points_earned}
-                    </span>
                   </div>
                 </div>
               ))}

@@ -1,11 +1,8 @@
-
 import React, { useState, useRef, useCallback } from 'react';
 import { Camera, Upload, Scan, Loader2, X, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/components/auth/AuthProvider';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 
 interface DetectionResult {
@@ -25,7 +22,6 @@ export const PlasticScanner: React.FC = () => {
   const [cameraActive, setCameraActive] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
-  const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -107,36 +103,16 @@ export const PlasticScanner: React.FC = () => {
   };
 
   const scanImage = async () => {
-    if (!selectedFile || !user) return;
+    if (!selectedFile) return;
 
     setIsScanning(true);
     try {
       const detectionResult = await simulateAIDetection(preview!);
       setResult(detectionResult);
 
-      const { error } = await supabase
-        .from('scan_history')
-        .insert({
-          user_id: user.id,
-          image_url: preview!,
-          detected_items: { plastic_type: detectionResult.plasticType },
-          confidence_score: detectionResult.confidence,
-          recyclable: detectionResult.recyclable,
-          disposal_method: detectionResult.instructions,
-          eco_points_earned: detectionResult.ecoPoints
-        });
-
-      if (error) throw error;
-
-      await supabase.rpc('update_user_stats', {
-        p_user_id: user.id,
-        p_eco_points: detectionResult.ecoPoints,
-        p_co2_saved: detectionResult.recyclable ? 0.5 : 0
-      });
-
       toast({
         title: "Scan Complete! 🎉",
-        description: `Earned ${detectionResult.ecoPoints} eco-points for this scan!`,
+        description: `Detected ${detectionResult.plasticType}!`,
       });
 
     } catch (error: any) {
@@ -153,7 +129,6 @@ export const PlasticScanner: React.FC = () => {
 
   const startCamera = async () => {
     try {
-      // Stop any existing stream first
       stopCamera();
       
       console.log('Requesting camera permission...');
@@ -176,7 +151,6 @@ export const PlasticScanner: React.FC = () => {
         setSelectedFile(null);
         setResult(null);
         
-        // Ensure video plays
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play().catch(console.error);
         };
@@ -216,7 +190,6 @@ export const PlasticScanner: React.FC = () => {
     setFacingMode(facingMode === 'user' ? 'environment' : 'user');
     if (cameraActive) {
       stopCamera();
-      // Small delay to ensure previous stream is stopped
       setTimeout(() => {
         startCamera();
       }, 100);
@@ -247,7 +220,6 @@ export const PlasticScanner: React.FC = () => {
     }
   };
 
-  // Cleanup on component unmount
   React.useEffect(() => {
     return () => {
       stopCamera();
@@ -274,18 +246,11 @@ export const PlasticScanner: React.FC = () => {
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!user && (
-            <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <p className="text-yellow-800 text-sm">Please sign in to use the scanner and earn eco-points!</p>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button
               onClick={() => fileInputRef.current?.click()}
               variant="outline"
               className="h-20 md:h-24 flex flex-col items-center justify-center gap-2 text-sm md:text-base"
-              disabled={!user}
             >
               <Upload className="h-6 w-6 md:h-8 md:w-8" />
               Upload Image
@@ -295,7 +260,7 @@ export const PlasticScanner: React.FC = () => {
               onClick={startCamera}
               variant="outline"
               className="h-20 md:h-24 flex flex-col items-center justify-center gap-2 text-sm md:text-base"
-              disabled={!user || cameraActive}
+              disabled={cameraActive}
             >
               <Camera className="h-6 w-6 md:h-8 md:w-8" />
               Use Camera
@@ -357,7 +322,7 @@ export const PlasticScanner: React.FC = () => {
               </Card>
               <Button 
                 onClick={scanImage} 
-                disabled={isScanning || !user}
+                disabled={isScanning}
                 className="w-full"
                 size="lg"
               >
@@ -403,12 +368,6 @@ export const PlasticScanner: React.FC = () => {
                       </Badge>
                     </div>
                   </div>
-                  <div className="p-3 bg-green-100 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-green-800 text-sm md:text-base">Eco-Points Earned:</span>
-                      <span className="font-bold text-green-800 text-lg md:text-xl">+{result.ecoPoints}</span>
-                    </div>
-                  </div>
                 </div>
                 
                 <div className="space-y-3">
@@ -448,7 +407,6 @@ export const PlasticScanner: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Instructions Card */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">📱 How to Use the Scanner</CardTitle>
