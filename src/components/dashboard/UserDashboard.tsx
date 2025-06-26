@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// Mock data for scan history
+// Mock data for scan history with images
 const mockRecentScans = [
   {
     id: '1',
@@ -39,23 +39,39 @@ const mockRecentScans = [
     plastic_types: { name: 'PP (Polypropylene)', plastic_code: '5', recyclable: true },
     created_at: new Date(Date.now() - 345600000).toISOString(),
     recyclable: true
-  },
-  {
-    id: '6',
-    image_url: '/placeholder.svg',
-    plastic_types: { name: 'PS (Polystyrene)', plastic_code: '6', recyclable: false },
-    created_at: new Date(Date.now() - 432000000).toISOString(),
-    recyclable: false
   }
 ];
 
 export const UserDashboard: React.FC = () => {
+  const formatTimestamp = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      return 'Just now';
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hour${diffInHours === 1 ? '' : 's'} ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      if (diffInDays < 7) {
+        return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
+      } else {
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+    }
+  };
+
   return (
     <div className="space-y-6 p-4 md:p-0">
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Scan History</h1>
         <p className="text-gray-600 text-sm md:text-base">
-          View your previous plastic scans and recycling information
+          Your previously scanned plastic items
         </p>
       </div>
 
@@ -64,39 +80,35 @@ export const UserDashboard: React.FC = () => {
           mockRecentScans.map((scan) => (
             <Card key={scan.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex-shrink-0">
                     <img 
                       src={scan.image_url} 
-                      alt="Scanned item" 
-                      className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                      alt="Scanned plastic item" 
+                      className="w-full sm:w-20 md:w-24 h-32 sm:h-20 md:h-24 object-cover rounded-lg"
                     />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-base md:text-lg truncate">
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div>
+                        <h3 className="font-semibold text-base md:text-lg text-gray-900">
                           {scan.plastic_types?.name || 'Unknown Plastic'}
                         </h3>
-                        {scan.plastic_types?.plastic_code && (
-                          <Badge variant="outline" className="text-xs">
-                            Type {scan.plastic_types.plastic_code}
+                        <div className="flex items-center gap-2 mt-1">
+                          {scan.plastic_types?.plastic_code && (
+                            <Badge variant="outline" className="text-xs">
+                              Type {scan.plastic_types.plastic_code}
+                            </Badge>
+                          )}
+                          <Badge variant={scan.recyclable ? "default" : "destructive"} className="text-xs">
+                            {scan.recyclable ? "Recyclable" : "Non-recyclable"}
                           </Badge>
-                        )}
+                        </div>
                       </div>
-                      <p className="text-xs md:text-sm text-gray-500">
-                        Scanned on {new Date(scan.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <Badge variant={scan.recyclable ? "default" : "destructive"} className="text-xs">
-                      {scan.recyclable ? "Recyclable" : "Non-recyclable"}
-                    </Badge>
+                    <p className="text-xs md:text-sm text-gray-500">
+                      Scanned {formatTimestamp(scan.created_at)}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -109,7 +121,7 @@ export const UserDashboard: React.FC = () => {
                 No scans yet. Start scanning to see your history here!
               </p>
               <p className="text-xs text-gray-400">
-                Use the Scanner tab to identify plastic items and build your recycling knowledge
+                Use the Scanner tab to identify plastic items
               </p>
             </CardContent>
           </Card>

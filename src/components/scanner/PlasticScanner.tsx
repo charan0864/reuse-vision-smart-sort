@@ -3,7 +3,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Upload, RotateCcw, CheckCircle, AlertCircle, Lightbulb, Smartphone } from 'lucide-react';
+import { Camera, Upload, RotateCcw, CheckCircle, AlertCircle, Lightbulb, Smartphone, Share } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -239,6 +239,50 @@ export const PlasticScanner: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleShare = async () => {
+    if (!scanResult) return;
+
+    const shareText = `I just scanned a plastic item with ReuScan! 🔍\n\n${scanResult.plasticType} (Type ${scanResult.plasticCode})\n${scanResult.recyclable ? '✅ Recyclable' : '❌ Non-recyclable'}\n\nConfidence: ${Math.round(scanResult.confidence * 100)}%\n\nCheck out ReuScan to identify your plastic items!`;
+
+    if (navigator.share && isMobile) {
+      try {
+        await navigator.share({
+          title: 'ReuScan Result',
+          text: shareText,
+          url: window.location.href
+        });
+      } catch (error) {
+        console.log('Sharing failed:', error);
+        fallbackShare(shareText);
+      }
+    } else {
+      fallbackShare(shareText);
+    }
+  };
+
+  const fallbackShare = (text: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        toast({
+          title: "Copied to clipboard!",
+          description: "Share the result with your friends",
+        });
+      });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast({
+        title: "Copied to clipboard!",
+        description: "Share the result with your friends",
+      });
+    }
+  };
+
   const resetScan = () => {
     setScanResult(null);
     setCapturedImage(null);
@@ -369,7 +413,7 @@ export const PlasticScanner: React.FC = () => {
                   )}
                 </div>
 
-                {!isScanning && (
+                {!isScanning && !scanResult && (
                   <Button 
                     onClick={resetScan} 
                     variant="outline" 
@@ -428,6 +472,24 @@ export const PlasticScanner: React.FC = () => {
                         </li>
                       ))}
                     </ul>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row gap-2 pt-4 border-t">
+                    <Button 
+                      onClick={handleShare}
+                      variant="outline"
+                      className="w-full md:w-auto flex items-center gap-2"
+                    >
+                      <Share className="h-4 w-4" />
+                      Share Result
+                    </Button>
+                    <Button 
+                      onClick={resetScan} 
+                      variant="outline" 
+                      className="w-full md:w-auto"
+                    >
+                      Scan Another Item
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

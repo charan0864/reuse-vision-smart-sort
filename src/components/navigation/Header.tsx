@@ -6,6 +6,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetClose,
 } from '@/components/ui/sheet';
 
 interface HeaderProps {
@@ -21,6 +22,10 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => 
     { id: 'education', label: 'Learn' },
     { id: 'chat', label: 'AI Assistant' },
   ];
+
+  const handleNavClick = (viewId: string) => {
+    onViewChange(viewId);
+  };
 
   return (
     <header className="border-b bg-white sticky top-0 z-50">
@@ -38,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => 
                 <Button
                   key={item.id}
                   variant={currentView === item.id ? "default" : "ghost"}
-                  onClick={() => onViewChange(item.id)}
+                  onClick={() => handleNavClick(item.id)}
                   className="text-sm"
                 >
                   {item.label}
@@ -56,17 +61,18 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => 
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent>
+                <SheetContent side="right" className="w-64">
                   <nav className="flex flex-col space-y-4 mt-8">
                     {navigation.map((item) => (
-                      <Button
-                        key={item.id}
-                        variant={currentView === item.id ? "default" : "ghost"}
-                        onClick={() => onViewChange(item.id)}
-                        className="justify-start"
-                      >
-                        {item.label}
-                      </Button>
+                      <SheetClose asChild key={item.id}>
+                        <Button
+                          variant={currentView === item.id ? "default" : "ghost"}
+                          onClick={() => handleNavClick(item.id)}
+                          className="justify-start text-base h-12"
+                        >
+                          {item.label}
+                        </Button>
+                      </SheetClose>
                     ))}
                   </nav>
                 </SheetContent>
