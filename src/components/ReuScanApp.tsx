@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Header } from '@/components/navigation/Header';
-import { UserDashboard } from '@/components/dashboard/UserDashboard';
 import { PlasticScanner } from '@/components/scanner/PlasticScanner';
 import { CommunityHub } from '@/components/community/CommunityHub';
 import { EducationalContent } from '@/components/education/EducationalContent';
@@ -14,8 +13,6 @@ const MainApp: React.FC = () => {
     switch (currentView) {
       case 'scanner':
         return <PlasticScanner />;
-      case 'history':
-        return <UserDashboard />;
       case 'community':
         return <CommunityHub />;
       case 'education':

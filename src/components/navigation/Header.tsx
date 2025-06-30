@@ -17,7 +17,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
   const navigation = [
     { id: 'scanner', label: 'Scanner' },
-    { id: 'history', label: 'History' },
     { id: 'community', label: 'Community' },
     { id: 'education', label: 'Learn' },
     { id: 'chat', label: 'AI Assistant' },
