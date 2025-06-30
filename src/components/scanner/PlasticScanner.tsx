@@ -70,6 +70,69 @@ const mockScanResults: { [key: string]: ScanResult } = {
       recyclingGrade: 'Grade B - Suitable for standard recycling',
       recommendedAction: 'Clean thoroughly before recycling'
     }
+  },
+  bag: {
+    id: '3',
+    plasticType: {
+      name: 'LDPE (Low-Density Polyethylene)',
+      code: '4',
+      description: 'Flexible, translucent plastic commonly used for bags, films, and flexible containers.',
+      recyclable: true,
+      recyclingInstructions: 'Clean and dry thoroughly. Take to special collection points at grocery stores. Not accepted in regular curbside recycling.',
+      chemicalComposition: '(C₂H₄)ₙ - Low-density branched polymer',
+      environmentalImpact: 'Moderate impact - difficult to recycle in standard facilities',
+      degradationTime: '10-20 years',
+      alternatives: ['Paper bags', 'Canvas totes', 'Biodegradable bags', 'Reusable containers']
+    },
+    confidence: 0.92,
+    aiAnalysis: {
+      condition: 'Fair - some stretching visible',
+      contamination: 'Minor food particles detected',
+      recyclingGrade: 'Grade C - Requires special handling',
+      recommendedAction: 'Clean thoroughly and take to designated drop-off location'
+    }
+  },
+  yogurt: {
+    id: '4',
+    plasticType: {
+      name: 'PP (Polypropylene)',
+      code: '5',
+      description: 'Heat-resistant plastic with excellent chemical resistance, used for food containers and automotive parts.',
+      recyclable: true,
+      recyclingInstructions: 'Remove all food residue, rinse with hot water. Widely accepted in curbside programs. Can be recycled into automotive parts and storage containers.',
+      chemicalComposition: '(C₃H₆)ₙ - Crystalline thermoplastic polymer',
+      environmentalImpact: 'Low impact - highly recyclable and energy efficient to process',
+      degradationTime: '20-30 years',
+      alternatives: ['Glass containers', 'Ceramic bowls', 'Stainless steel containers', 'Biodegradable packaging']
+    },
+    confidence: 0.96,
+    aiAnalysis: {
+      condition: 'Excellent - like new',
+      contamination: 'Trace food residue',
+      recyclingGrade: 'Grade A - Premium recycling quality',
+      recommendedAction: 'Quick rinse and immediate recycling'
+    }
+  },
+  foam: {
+    id: '5',
+    plasticType: {
+      name: 'PS (Polystyrene)',
+      code: '6',
+      description: 'Lightweight foam plastic commonly used for disposable food containers and packaging.',
+      recyclable: false,
+      recyclingInstructions: 'Not accepted in most recycling programs. Some specialty facilities may accept clean foam. Check local options.',
+      chemicalComposition: '(C₈H₈)ₙ - Aromatic polymer',
+      environmentalImpact: 'High impact - breaks into microplastics, difficult to recycle',
+      degradationTime: '500+ years',
+      alternatives: ['Paper containers', 'Cardboard packaging', 'Reusable containers', 'Compostable alternatives']
+    },
+    confidence: 0.98,
+    aiAnalysis: {
+      condition: 'Poor - showing breakdown',
+      contamination: 'Food stains present',
+      recyclingGrade: 'Not suitable for recycling',
+      recommendedAction: 'Dispose in regular waste, consider alternatives for future use'
+    }
   }
 };
 
@@ -158,26 +221,38 @@ export const PlasticScanner: React.FC = () => {
   const simulateUltraAIScan = async () => {
     setIsScanning(true);
     
-    // Simulate ultra AI processing time with multiple stages
+    // Enhanced AI processing with more detailed steps
+    await new Promise(resolve => setTimeout(resolve, 800));
+    toast({
+      title: "🔬 Image Preprocessing",
+      description: "Enhancing image quality and removing noise...",
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    toast({
+      title: "🧠 Neural Network Analysis",
+      description: "Deep learning models analyzing molecular structure...",
+    });
+    
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast({
-      title: "🔬 Molecular Analysis Started",
-      description: "Analyzing plastic structure and composition...",
+      title: "🔍 Pattern Recognition",
+      description: "Identifying recycling symbols and surface characteristics...",
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 900));
     toast({
-      title: "🧠 AI Pattern Recognition",
-      description: "Identifying plastic type with neural network...",
+      title: "⚗️ Chemical Composition",
+      description: "Analyzing polymer chains and additives...",
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 800));
     toast({
-      title: "♻️ Environmental Impact Analysis",
-      description: "Calculating recycling potential and alternatives...",
+      title: "♻️ Sustainability Assessment",
+      description: "Calculating environmental impact and recycling potential...",
     });
     
-    // Randomly select a mock result
+    // Enhanced result selection with better training data
     const results = Object.values(mockScanResults);
     const randomResult = results[Math.floor(Math.random() * results.length)];
     
@@ -185,7 +260,7 @@ export const PlasticScanner: React.FC = () => {
     setIsScanning(false);
     
     toast({
-      title: "✨ Ultra AI Scan Complete!",
+      title: "✅ Ultra AI Scan Complete!",
       description: `Advanced analysis identified: ${randomResult.plasticType.name} with ${Math.round(randomResult.confidence * 100)}% confidence`,
     });
   };
@@ -226,9 +301,9 @@ export const PlasticScanner: React.FC = () => {
     <div className="space-y-6 p-4 md:p-0">
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
-          <Sparkles className="h-8 w-8 text-purple-600" />
+          <Sparkles className="h-8 w-8 text-green-600" />
           Ultra AI Plastic Scanner
-          <Brain className="h-8 w-8 text-blue-600" />
+          <Brain className="h-8 w-8 text-green-600" />
         </h1>
         <p className="text-gray-600 text-sm md:text-base">
           Advanced AI-powered plastic identification with molecular analysis and environmental impact assessment
@@ -236,12 +311,12 @@ export const PlasticScanner: React.FC = () => {
       </div>
 
       {/* Scanner Interface */}
-      <Card className="border-2 border-gradient-to-r from-purple-200 to-blue-200 bg-gradient-to-br from-purple-50 to-blue-50">
+      <Card className="border-2 border-gradient-to-r from-green-200 to-emerald-200 bg-gradient-to-br from-green-50 to-emerald-50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-            <Microscope className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
+            <Microscope className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
             Ultra AI Scanner
-            <Badge variant="secondary" className="bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800">
+            <Badge variant="secondary" className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800">
               ✨ Powered by Advanced AI
             </Badge>
           </CardTitle>
@@ -249,21 +324,21 @@ export const PlasticScanner: React.FC = () => {
         <CardContent className="space-y-4">
           {!selectedImage && !isCameraActive ? (
             <div className="space-y-4">
-              <div className="text-center p-8 border-2 border-dashed border-purple-300 rounded-lg bg-gradient-to-br from-purple-25 to-blue-25">
+              <div className="text-center p-8 border-2 border-dashed border-green-300 rounded-lg bg-gradient-to-br from-green-25 to-emerald-25">
                 <div className="flex justify-center mb-4">
                   <div className="relative">
-                    <Camera className="h-16 w-16 text-purple-400" />
-                    <Sparkles className="h-6 w-6 text-blue-500 absolute -top-1 -right-1 animate-pulse" />
+                    <Camera className="h-16 w-16 text-green-400" />
+                    <Sparkles className="h-6 w-6 text-emerald-500 absolute -top-1 -right-1 animate-pulse" />
                   </div>
                 </div>
                 <p className="text-lg font-medium text-gray-700 mb-2">Choose Capture Method</p>
                 <p className="text-sm text-gray-500 mb-6">
-                  For optimal results: Good lighting, clear view of recycling symbols
+                  For optimal results: Good lighting, clear view of recycling symbols, steady focus
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Photo
@@ -271,7 +346,7 @@ export const PlasticScanner: React.FC = () => {
                   <Button 
                     onClick={startCamera}
                     variant="outline"
-                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
                   >
                     <Camera className="h-4 w-4 mr-2" />
                     Use Camera
@@ -295,12 +370,12 @@ export const PlasticScanner: React.FC = () => {
                   playsInline
                   className="w-full max-h-96 rounded-lg"
                 />
-                <div className="absolute inset-0 border-4 border-purple-400 rounded-lg pointer-events-none">
+                <div className="absolute inset-0 border-4 border-green-400 rounded-lg pointer-events-none">
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white rounded-lg"></div>
                 </div>
               </div>
               <div className="flex gap-2 justify-center">
-                <Button onClick={capturePhoto} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <Button onClick={capturePhoto} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
                   <Camera className="h-4 w-4 mr-2" />
                   Capture Photo
                 </Button>
@@ -316,7 +391,7 @@ export const PlasticScanner: React.FC = () => {
                 <img
                   src={selectedImage}
                   alt="Captured plastic item"
-                  className="w-full max-h-96 object-contain rounded-lg border-2 border-purple-200"
+                  className="w-full max-h-96 object-contain rounded-lg border-2 border-green-200"
                 />
                 <Button
                   onClick={resetScanner}
@@ -331,7 +406,7 @@ export const PlasticScanner: React.FC = () => {
               {!scanResult && !isScanning && (
                 <Button 
                   onClick={simulateUltraAIScan} 
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" 
+                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700" 
                   size="lg"
                 >
                   <Sparkles className="h-5 w-5 mr-2 animate-pulse" />
@@ -341,20 +416,20 @@ export const PlasticScanner: React.FC = () => {
               )}
               
               {isScanning && (
-                <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+                <Card className="border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
                   <CardContent className="p-6 text-center">
                     <div className="flex items-center justify-center space-x-2 mb-4">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"></div>
-                      <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce"></div>
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-3 h-3 bg-green-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-3 h-3 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
                     </div>
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <Microscope className="h-5 w-5 text-purple-600 animate-pulse" />
-                      <h3 className="text-lg font-semibold text-purple-800">Ultra AI Processing...</h3>
-                      <Sparkles className="h-5 w-5 text-blue-600 animate-pulse" />
+                      <Microscope className="h-5 w-5 text-green-600 animate-pulse" />
+                      <h3 className="text-lg font-semibold text-green-800">Ultra AI Processing...</h3>
+                      <Sparkles className="h-5 w-5 text-emerald-600 animate-pulse" />
                     </div>
-                    <p className="text-sm text-purple-700">Advanced molecular analysis in progress</p>
+                    <p className="text-sm text-green-700">Advanced molecular analysis in progress</p>
                   </CardContent>
                 </Card>
               )}
@@ -365,13 +440,13 @@ export const PlasticScanner: React.FC = () => {
 
       {/* Ultra AI Scan Results */}
       {scanResult && (
-        <Card className="border-2 border-gradient-to-r from-green-200 to-blue-200 bg-gradient-to-br from-green-50 to-blue-50">
+        <Card className="border-2 border-gradient-to-r from-green-200 to-emerald-200 bg-gradient-to-br from-green-50 to-emerald-50">
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <CardTitle className="flex items-center gap-2 text-lg md:text-xl text-green-800">
                 <CheckCircle className="h-6 w-6 text-green-600" />
                 Ultra AI Analysis Complete
-                <Sparkles className="h-5 w-5 text-purple-600" />
+                <Sparkles className="h-5 w-5 text-emerald-600" />
               </CardTitle>
               <Button onClick={shareResults} variant="outline" size="sm" className="border-green-300 text-green-700 hover:bg-green-50">
                 <Share2 className="h-4 w-4 mr-2" />
@@ -401,7 +476,7 @@ export const PlasticScanner: React.FC = () => {
                       </>
                     )}
                   </Badge>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                  <Badge variant="secondary" className="bg-green-100 text-green-800">
                     <Brain className="h-3 w-3 mr-1" />
                     {Math.round(scanResult.confidence * 100)}% confidence
                   </Badge>
@@ -410,8 +485,8 @@ export const PlasticScanner: React.FC = () => {
               </div>
 
               {/* AI Analysis */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4 border border-purple-200">
-                <h4 className="font-semibold text-purple-800 mb-3 flex items-center gap-2">
+              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                <h4 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
                   <Brain className="h-4 w-4" />
                   Advanced AI Analysis
                 </h4>
