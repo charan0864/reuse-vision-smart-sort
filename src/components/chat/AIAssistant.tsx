@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Send, Bot, User, Lightbulb, Recycle, AlertCircle, BookOpen, Zap, Microscope, Factory, Globe, Leaf, TrendingUp, Users, Building, Truck, ChemicalGlass, TestTube } from 'lucide-react';
+import { Send, Bot, User, Lightbulb, Recycle, AlertCircle, BookOpen, Zap, Microscope, Factory, Globe, Leaf, TrendingUp, Users, Building, Truck, Beaker, TestTube } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface Message {
@@ -187,14 +187,22 @@ export const AIAssistant: React.FC = () => {
     { text: "What's the molecular structure difference between thermoplastics?", icon: <Microscope className="h-4 w-4" />, category: "Technical" },
     { text: "Explain the complete mechanical recycling process", icon: <Recycle className="h-4 w-4" />, category: "Recycling" },
     { text: "What's the environmental impact of microplastics in oceans?", icon: <AlertCircle className="h-4 w-4" />, category: "Environmental" },
-    { text: "How does chemical recycling differ from mechanical recycling?", icon: <ChemicalGlass className="h-4 w-4" />, category: "Technology" },
+    { text: "How does chemical recycling differ from mechanical recycling?", icon: <Beaker className="h-4 w-4" />, category: "Technology" },
     { text: "Which plastics are food-safe and why?", icon: <TestTube className="h-4 w-4" />, category: "Safety" },
     { text: "How do automotive manufacturers use recycled plastics?", icon: <Truck className="h-4 w-4" />, category: "Industrial" },
     { text: "What are the latest EU plastic packaging regulations?", icon: <Globe className="h-4 w-4" />, category: "Policy" },
     { text: "How accurate are AI-powered plastic sorting systems?", icon: <TrendingUp className="h-4 w-4" />, category: "Innovation" },
     { text: "What biodegradable plastic alternatives exist for packaging?", icon: <Leaf className="h-4 w-4" />, category: "Sustainability" },
     { text: "How do plastic additives affect recyclability?", icon: <Building className="h-4 w-4" />, category: "Materials" },
-    { text: "What's the carbon footprint of different plastic types?", icon: <Users className="h-4 w-4" />, category: "Climate" }
+    { text: "What's the carbon footprint of different plastic types?", icon: <Users className="h-4 w-4" />, category: "Climate" },
+    { text: "How can I prepare plastics for optimal recycling?", icon: <Recycle className="h-4 w-4" />, category: "Best Practices" },
+    { text: "What are the latest innovations in plastic-eating enzymes?", icon: <Microscope className="h-4 w-4" />, category: "Biotechnology" },
+    { text: "How does plastic pollution affect marine ecosystems?", icon: <AlertCircle className="h-4 w-4" />, category: "Marine Impact" },
+    { text: "What quality standards exist for recycled plastics?", icon: <TestTube className="h-4 w-4" />, category: "Quality Control" },
+    { text: "How do different plastic types perform in circular economy?", icon: <TrendingUp className="h-4 w-4" />, category: "Circular Economy" },
+    { text: "What are the health implications of microplastics?", icon: <Beaker className="h-4 w-4" />, category: "Health Sciences" },
+    { text: "How can businesses implement zero plastic waste strategies?", icon: <Building className="h-4 w-4" />, category: "Business Strategy" },
+    { text: "What role does AI play in plastic waste management?", icon: <Zap className="h-4 w-4" />, category: "AI Technology" }
   ];
 
   return (
