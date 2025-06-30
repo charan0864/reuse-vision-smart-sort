@@ -3,77 +3,112 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-// Enhanced mock data for scan history with better image handling
+// Enhanced mock data for scan history with actual uploaded photos
 const mockRecentScans = [
   {
     id: '1',
-    image_url: '/placeholder.svg',
+    uploaded_image: '/placeholder.svg', // User's uploaded photo
+    image_url: '/placeholder.svg', // Analysis result image (can be same as uploaded)
     plastic_types: { 
       name: 'PET (Polyethylene Terephthalate)', 
       plastic_code: '1', 
       recyclable: true,
-      description: 'Clear, lightweight plastic commonly used for beverage bottles and food containers.'
+      description: 'Crystal-clear, lightweight thermoplastic commonly used for water bottles, soda bottles, and food containers. Highly recyclable with excellent barrier properties.',
+      detailed_info: 'Chemical resistance: Excellent against acids and bases. Heat resistance: Up to 70°C. Recycling rate: 95% acceptance in curbside programs.'
     },
-    created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    created_at: new Date(Date.now() - 3600000).toISOString(),
     recyclable: true,
     confidence: 0.94,
-    scan_location: 'Home'
+    scan_location: 'Home Kitchen',
+    analysis_details: {
+      color_analysis: 'Clear transparent plastic',
+      texture_analysis: 'Smooth rigid surface',
+      shape_analysis: 'Cylindrical bottle form'
+    }
   },
   {
     id: '2',
+    uploaded_image: '/placeholder.svg',
     image_url: '/placeholder.svg',
     plastic_types: { 
       name: 'HDPE (High-Density Polyethylene)', 
       plastic_code: '2', 
       recyclable: true,
-      description: 'Durable, opaque plastic used for milk jugs and detergent bottles.'
+      description: 'Opaque, chemical-resistant thermoplastic with excellent impact strength. Used for milk jugs, detergent bottles, and outdoor furniture.',
+      detailed_info: 'Density: 0.93-0.97 g/cm³. Chemical resistance: Outstanding. UV resistance: Good with additives.'
     },
-    created_at: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    created_at: new Date(Date.now() - 86400000).toISOString(),
     recyclable: true,
     confidence: 0.91,
-    scan_location: 'Kitchen'
+    scan_location: 'Laundry Room',
+    analysis_details: {
+      color_analysis: 'Opaque white plastic',
+      texture_analysis: 'Slightly textured surface',
+      shape_analysis: 'Jug with handle'
+    }
   },
   {
     id: '3',
+    uploaded_image: '/placeholder.svg',
     image_url: '/placeholder.svg',
     plastic_types: { 
       name: 'PVC (Polyvinyl Chloride)', 
       plastic_code: '3', 
       recyclable: false,
-      description: 'Rigid plastic containing chlorine, used for pipes and window frames.'
+      description: 'Rigid thermoplastic containing chlorine. Difficult to recycle due to additives and chlorine content. Common in construction materials.',
+      detailed_info: 'Chlorine content: 57% by weight. Melting point: 100-260°C. Recyclability: Limited due to contamination concerns.'
     },
-    created_at: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+    created_at: new Date(Date.now() - 172800000).toISOString(),
     recyclable: false,
     confidence: 0.88,
-    scan_location: 'Office'
+    scan_location: 'Garage Workshop',
+    analysis_details: {
+      color_analysis: 'Rigid gray plastic',
+      texture_analysis: 'Hard smooth surface',
+      shape_analysis: 'Pipe section'
+    }
   },
   {
     id: '4',
+    uploaded_image: '/placeholder.svg',
     image_url: '/placeholder.svg',
     plastic_types: { 
       name: 'LDPE (Low-Density Polyethylene)', 
       plastic_code: '4', 
       recyclable: true,
-      description: 'Flexible plastic used for bags, food wraps, and squeezable bottles.'
+      description: 'Flexible, translucent film plastic used for bags, wraps, and squeezable containers. Requires special collection programs.',
+      detailed_info: 'Flexibility: High. Tear resistance: Good. Collection: Store drop-off programs primarily.'
     },
-    created_at: new Date(Date.now() - 259200000).toISOString(), // 3 days ago
+    created_at: new Date(Date.now() - 259200000).toISOString(),
     recyclable: true,
     confidence: 0.86,
-    scan_location: 'Grocery Store'
+    scan_location: 'Shopping Mall',
+    analysis_details: {
+      color_analysis: 'Translucent film',
+      texture_analysis: 'Flexible thin material',
+      shape_analysis: 'Shopping bag form'
+    }
   },
   {
     id: '5',
+    uploaded_image: '/placeholder.svg',
     image_url: '/placeholder.svg',
     plastic_types: { 
       name: 'PP (Polypropylene)', 
       plastic_code: '5', 
       recyclable: true,
-      description: 'Versatile plastic used for yogurt containers and bottle caps.'
+      description: 'Versatile thermoplastic with excellent fatigue resistance. Used for yogurt containers, bottle caps, and automotive parts.',
+      detailed_info: 'Fatigue resistance: Excellent. Chemical resistance: Very good. Heat resistance: Up to 100°C continuous use.'
     },
-    created_at: new Date(Date.now() - 345600000).toISOString(), // 4 days ago
+    created_at: new Date(Date.now() - 345600000).toISOString(),
     recyclable: true,
     confidence: 0.89,
-    scan_location: 'Restaurant'
+    scan_location: 'Office Cafeteria',
+    analysis_details: {
+      color_analysis: 'Opaque colored plastic',
+      texture_analysis: 'Semi-flexible surface',
+      shape_analysis: 'Container with lid'
+    }
   }
 ];
 
@@ -81,11 +116,13 @@ export const UserDashboard: React.FC = () => {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     
     if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
       return {
-        relative: 'Just now',
+        relative: diffInMinutes < 1 ? 'Just now' : `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`,
         absolute: date.toLocaleString('en-US', {
           weekday: 'short',
           month: 'short',
@@ -147,7 +184,7 @@ export const UserDashboard: React.FC = () => {
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Scan History</h1>
         <p className="text-gray-600 text-sm md:text-base">
-          Your previously scanned plastic items with detailed analysis
+          Your scanned plastic items with uploaded photos and detailed AI analysis
         </p>
       </div>
 
@@ -159,12 +196,15 @@ export const UserDashboard: React.FC = () => {
               <Card key={scan.id} className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500">
                 <CardContent className="p-6">
                   <div className="flex flex-col lg:flex-row gap-6">
-                    {/* Image Section */}
+                    {/* Image Section - Show User's Uploaded Photo */}
                     <div className="flex-shrink-0">
                       <div className="relative">
+                        <div className="text-center mb-2">
+                          <p className="text-xs text-gray-500 font-medium">Your Photo</p>
+                        </div>
                         <img 
-                          src={scan.image_url} 
-                          alt={`Scanned ${scan.plastic_types?.name || 'plastic item'}`}
+                          src={scan.uploaded_image} 
+                          alt={`Your uploaded photo of ${scan.plastic_types?.name || 'plastic item'}`}
                           className="w-full lg:w-32 xl:w-36 h-32 lg:h-32 xl:h-36 object-cover rounded-xl shadow-md border-2 border-gray-200"
                         />
                         <div className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border">
@@ -185,6 +225,28 @@ export const UserDashboard: React.FC = () => {
                           <p className="text-gray-600 text-sm md:text-base leading-relaxed">
                             {scan.plastic_types?.description || 'No description available'}
                           </p>
+                          
+                          {/* AI Analysis Details */}
+                          {scan.analysis_details && (
+                            <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                              <h4 className="text-sm font-semibold text-blue-800 mb-2">🔬 AI Analysis Details</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                                <div>
+                                  <span className="font-medium text-blue-700">Color:</span>
+                                  <p className="text-blue-600">{scan.analysis_details.color_analysis}</p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-blue-700">Texture:</span>
+                                  <p className="text-blue-600">{scan.analysis_details.texture_analysis}</p>
+                                </div>
+                                <div>
+                                  <span className="font-medium text-blue-700">Shape:</span>
+                                  <p className="text-blue-600">{scan.analysis_details.shape_analysis}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
                           <div className="flex flex-wrap items-center gap-2">
                             {scan.plastic_types?.plastic_code && (
                               <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
@@ -207,6 +269,14 @@ export const UserDashboard: React.FC = () => {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Detailed Information */}
+                      {scan.plastic_types?.detailed_info && (
+                        <div className="bg-gray-50 rounded-lg p-4 border">
+                          <h4 className="text-sm font-semibold text-gray-800 mb-2">📊 Technical Details</h4>
+                          <p className="text-xs md:text-sm text-gray-700">{scan.plastic_types.detailed_info}</p>
+                        </div>
+                      )}
                       
                       {/* Time and Date Section */}
                       <div className="bg-gray-50 rounded-lg p-4 border">
@@ -237,10 +307,10 @@ export const UserDashboard: React.FC = () => {
                 No scans yet
               </p>
               <p className="text-xs md:text-sm text-gray-400 mb-4">
-                Start scanning plastic items to see your detailed history here
+                Start scanning plastic items to see your detailed history with uploaded photos
               </p>
               <p className="text-xs text-gray-400">
-                Use the Scanner tab to identify plastic items and get recycling guidance
+                Use the Scanner tab to identify plastic items and get comprehensive recycling guidance
               </p>
             </CardContent>
           </Card>
