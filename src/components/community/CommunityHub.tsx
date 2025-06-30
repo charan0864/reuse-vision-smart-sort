@@ -13,56 +13,52 @@ const mockUserSubmissions = [
     item_name: 'Organic Shampoo Bottle',
     user_classification: 'HDPE (Type 2)',
     description: 'Clear HDPE bottle with pump dispenser, completely clean',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1563295566-8fa83ff6e41a?w=400&h=300&fit=crop',
     created_at: new Date(Date.now() - 86400000).toISOString(),
     verified: true,
     status: 'approved',
     votes_helpful: 15,
     votes_not_helpful: 1,
-    points_earned: 10,
-    verification_notes: 'Excellent identification and description. High-quality submission.'
+    verification_notes: 'Excellent identification and description. High-quality submission that helps improve our AI accuracy.'
   },
   {
     id: '2',
     item_name: 'Microwave Food Container',
     user_classification: 'PP (Type 5)',
     description: 'Microwave-safe plastic food storage container with tight-fitting lid',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1558618047-3c8681c6b3b3?w=400&h=300&fit=crop',
     created_at: new Date(Date.now() - 172800000).toISOString(),
     verified: true,
     status: 'approved',
     votes_helpful: 12,
     votes_not_helpful: 0,
-    points_earned: 8,
-    verification_notes: 'Correct identification. Well-documented recycling properties.'
+    verification_notes: 'Correct identification with detailed description. Well-documented recycling properties.'
   },
   {
     id: '3',
     item_name: 'Disposable Coffee Cup',
     user_classification: 'Mixed Material',
     description: 'Paper cup with plastic lining - not recyclable in standard programs',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop',
     created_at: new Date(Date.now() - 259200000).toISOString(),
     verified: false,
     status: 'under_review',
     votes_helpful: 3,
     votes_not_helpful: 2,
-    points_earned: 0,
-    verification_notes: 'Under expert review. Complex mixed-material classification.'
+    verification_notes: 'Under expert review. Complex mixed-material classification requires further analysis.'
   },
   {
     id: '4',
     item_name: 'Yogurt Container',
     user_classification: 'PS (Type 6)',
     description: 'Single-use polystyrene yogurt container',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1571212515416-7ad6a40a9c47?w=400&h=300&fit=crop',
     created_at: new Date(Date.now() - 345600000).toISOString(),
     verified: false,
     status: 'rejected',
     votes_helpful: 1,
     votes_not_helpful: 8,
-    points_earned: 0,
-    verification_notes: 'Incorrect classification. This appears to be PP (Type 5), not PS (Type 6).'
+    verification_notes: 'Incorrect classification. This appears to be PP (Type 5), not PS (Type 6). Please review identification guidelines.'
   }
 ];
 
@@ -86,7 +82,7 @@ export const CommunityHub: React.FC = () => {
     setClassification('');
     setIsSubmitting(false);
     
-    alert('Submission received! Our experts will review it within 24 hours. Points will be awarded based on accuracy and quality.');
+    alert('Submission received! Our experts will review it within 24 hours and provide feedback to help improve our AI training data quality.');
   };
 
   const formatDate = (dateString: string) => {
@@ -119,13 +115,12 @@ export const CommunityHub: React.FC = () => {
       case 'under_review':
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">🔍 Under Review</Badge>;
       case 'rejected':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800">✗ Rejected</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800">✗ Needs Revision</Badge>;
       default:
         return <Badge variant="outline">Pending</Badge>;
     }
   };
 
-  const totalPointsEarned = mockUserSubmissions.reduce((sum, submission) => sum + submission.points_earned, 0);
   const approvedSubmissions = mockUserSubmissions.filter(s => s.status === 'approved').length;
 
   return (
@@ -133,29 +128,9 @@ export const CommunityHub: React.FC = () => {
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Community</h1>
         <p className="text-gray-600 text-sm md:text-base">
-          Contribute to our AI training and earn points through quality submissions
+          Help improve our AI accuracy by contributing quality plastic identification data
         </p>
       </div>
-
-      {/* User Stats */}
-      <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-green-600">{totalPointsEarned}</div>
-              <div className="text-sm text-gray-600">Total Points Earned</div>
-            </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-blue-600">{approvedSubmissions}</div>
-              <div className="text-sm text-gray-600">Approved Submissions</div>
-            </div>
-            <div>
-              <div className="text-2xl md:text-3xl font-bold text-purple-600">{mockUserSubmissions.length}</div>
-              <div className="text-sm text-gray-600">Total Contributions</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <Card>
         <CardHeader>
@@ -166,7 +141,7 @@ export const CommunityHub: React.FC = () => {
                 Submit Item for AI Training
               </CardTitle>
               <p className="text-gray-600 text-sm md:text-base mt-1">
-                Help improve our AI accuracy • Earn 3-15 points per valid submission
+                Help improve our AI accuracy with quality submissions and expert feedback
               </p>
             </div>
             <Button 
@@ -187,12 +162,12 @@ export const CommunityHub: React.FC = () => {
                   Quality Submission Guidelines
                 </CardTitle>
                 <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h4 className="font-semibold text-blue-800 mb-2">Point System:</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">Submission Quality Standards:</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
-                    <li>• <strong>3-5 points:</strong> Basic correct identification</li>
-                    <li>• <strong>6-10 points:</strong> Detailed description with recycling info</li>
-                    <li>• <strong>11-15 points:</strong> Expert-level submission with technical details</li>
-                    <li>• <strong>0 points:</strong> Incorrect or low-quality submissions</li>
+                    <li>• <strong>Accurate Classification:</strong> Use correct plastic type identification</li>
+                    <li>• <strong>Detailed Description:</strong> Include size, condition, and usage information</li>
+                    <li>• <strong>Clear Photos:</strong> Well-lit, focused images showing recycling codes</li>
+                    <li>• <strong>Recycling Information:</strong> Specify local acceptance and preparation requirements</li>
                   </ul>
                 </div>
               </CardHeader>
@@ -213,7 +188,7 @@ export const CommunityHub: React.FC = () => {
                     className="w-full"
                   />
                   <Textarea
-                    placeholder="Detailed description, recycling properties, and any special notes (higher quality = more points)"
+                    placeholder="Detailed description including recycling properties, condition, and any special notes"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="w-full min-h-[120px]"
@@ -250,7 +225,7 @@ export const CommunityHub: React.FC = () => {
             My Submissions
           </CardTitle>
           <p className="text-gray-600 text-sm md:text-base">
-            Track your contributions, points earned, and expert feedback
+            Track your contributions, review status, and expert feedback
           </p>
         </CardHeader>
         <CardContent>
@@ -267,17 +242,16 @@ export const CommunityHub: React.FC = () => {
                       src={submission.image_url}
                       alt={submission.item_name}
                       className="w-full md:w-20 h-32 md:h-20 object-cover rounded border"
+                      onError={(e) => {
+                        const img = e.target as HTMLImageElement;
+                        img.src = '/placeholder.svg';
+                      }}
                     />
                     <div className="flex-1">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
                         <h3 className="font-semibold text-base md:text-lg">{submission.item_name}</h3>
                         <div className="flex items-center gap-2">
                           {getStatusBadge(submission.status)}
-                          {submission.points_earned > 0 && (
-                            <Badge variant="outline" className="bg-green-50 text-green-700">
-                              +{submission.points_earned} Points
-                            </Badge>
-                          )}
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
@@ -317,7 +291,7 @@ export const CommunityHub: React.FC = () => {
                           Submitted {formatDate(submission.created_at)}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">Community votes:</span>
+                          <span className="text-xs text-gray-500">Community feedback:</span>
                           <div className="flex items-center gap-1">
                             <span className="text-xs text-green-600">👍 {submission.votes_helpful || 0}</span>
                             <span className="text-xs text-red-600 ml-2">👎 {submission.votes_not_helpful || 0}</span>

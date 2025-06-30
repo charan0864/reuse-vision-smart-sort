@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 const mockRecentScans = [
   {
     id: '1',
-    uploaded_image: '/placeholder.svg', // User's uploaded photo
-    image_url: '/placeholder.svg', // Analysis result image (can be same as uploaded)
+    uploaded_image: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=400&h=300&fit=crop', 
+    image_url: 'https://images.unsplash.com/photo-1597733336794-12d05021d510?w=400&h=300&fit=crop',
     plastic_types: { 
       name: 'PET (Polyethylene Terephthalate)', 
       plastic_code: '1', 
@@ -28,8 +28,8 @@ const mockRecentScans = [
   },
   {
     id: '2',
-    uploaded_image: '/placeholder.svg',
-    image_url: '/placeholder.svg',
+    uploaded_image: 'https://images.unsplash.com/photo-1563295566-8fa83ff6e41a?w=400&h=300&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1563295566-8fa83ff6e41a?w=400&h=300&fit=crop',
     plastic_types: { 
       name: 'HDPE (High-Density Polyethylene)', 
       plastic_code: '2', 
@@ -49,8 +49,8 @@ const mockRecentScans = [
   },
   {
     id: '3',
-    uploaded_image: '/placeholder.svg',
-    image_url: '/placeholder.svg',
+    uploaded_image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop',
     plastic_types: { 
       name: 'PVC (Polyvinyl Chloride)', 
       plastic_code: '3', 
@@ -70,8 +70,8 @@ const mockRecentScans = [
   },
   {
     id: '4',
-    uploaded_image: '/placeholder.svg',
-    image_url: '/placeholder.svg',
+    uploaded_image: 'https://images.unsplash.com/photo-1607798748738-b15c40d33d57?w=400&h=300&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1607798748738-b15c40d33d57?w=400&h=300&fit=crop',
     plastic_types: { 
       name: 'LDPE (Low-Density Polyethylene)', 
       plastic_code: '4', 
@@ -91,8 +91,8 @@ const mockRecentScans = [
   },
   {
     id: '5',
-    uploaded_image: '/placeholder.svg',
-    image_url: '/placeholder.svg',
+    uploaded_image: 'https://images.unsplash.com/photo-1558618047-3c8681c6b3b3?w=400&h=300&fit=crop',
+    image_url: 'https://images.unsplash.com/photo-1558618047-3c8681c6b3b3?w=400&h=300&fit=crop',
     plastic_types: { 
       name: 'PP (Polypropylene)', 
       plastic_code: '5', 
@@ -182,9 +182,9 @@ export const UserDashboard: React.FC = () => {
   return (
     <div className="space-y-6 p-4 md:p-0">
       <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Scan History</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Your Scan History</h1>
         <p className="text-gray-600 text-sm md:text-base">
-          Your scanned plastic items with uploaded photos and detailed AI analysis
+          Your personal scan history with uploaded photos and detailed AI analysis
         </p>
       </div>
 
@@ -200,12 +200,16 @@ export const UserDashboard: React.FC = () => {
                     <div className="flex-shrink-0">
                       <div className="relative">
                         <div className="text-center mb-2">
-                          <p className="text-xs text-gray-500 font-medium">Your Photo</p>
+                          <p className="text-xs text-gray-500 font-medium">Your Uploaded Photo</p>
                         </div>
                         <img 
                           src={scan.uploaded_image} 
                           alt={`Your uploaded photo of ${scan.plastic_types?.name || 'plastic item'}`}
                           className="w-full lg:w-32 xl:w-36 h-32 lg:h-32 xl:h-36 object-cover rounded-xl shadow-md border-2 border-gray-200"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = '/placeholder.svg';
+                          }}
                         />
                         <div className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md border">
                           <Badge variant={scan.recyclable ? "default" : "destructive"} className="text-xs px-2 py-1">

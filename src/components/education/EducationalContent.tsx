@@ -10,7 +10,7 @@ const educationalArticles = [
     title: 'Complete Guide to Plastic Recycling Codes',
     category: 'Basics',
     content: 'Master the 7 plastic recycling codes, their properties, recycling processes, and environmental impact. Learn to identify each type and make informed recycling decisions.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
     likes: 127,
     views: 2340,
     icon: <Recycle className="h-5 w-5" />,
@@ -23,7 +23,7 @@ const educationalArticles = [
     title: 'Ocean Plastic Crisis: Facts and Solutions',
     category: 'Environment',
     content: 'Explore the devastating impact of plastic pollution on marine ecosystems, microplastics in the food chain, and innovative cleanup technologies making a difference.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400&h=300&fit=crop',
     likes: 189,
     views: 3120,
     icon: <AlertTriangle className="h-5 w-5" />,
@@ -36,7 +36,7 @@ const educationalArticles = [
     title: 'Advanced Plastic Preparation for Maximum Recycling',
     category: 'Tips',
     content: 'Professional-grade techniques for cleaning, sorting, and preparing plastics to achieve 95%+ recycling efficiency. Includes contamination prevention and quality optimization.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&h=300&fit=crop',
     likes: 234,
     views: 4560,
     icon: <Lightbulb className="h-5 w-5" />,
@@ -49,7 +49,7 @@ const educationalArticles = [
     title: 'Global Community Recycling Success Stories',
     category: 'Community',
     content: 'Discover how communities worldwide achieved 90%+ recycling rates through innovative programs, citizen engagement, and policy changes that you can implement locally.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&h=300&fit=crop',
     likes: 156,
     views: 2890,
     icon: <Users className="h-5 w-5" />,
@@ -62,7 +62,7 @@ const educationalArticles = [
     title: 'Revolutionary Plastic Recycling Technologies 2024',
     category: 'Innovation',
     content: 'Cutting-edge chemical recycling, AI-powered sorting systems, enzyme-based breakdown, and molecular recycling technologies transforming the industry.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1567427018141-0584cfcbf1b8?w=400&h=300&fit=crop',
     likes: 298,
     views: 5210,
     icon: <TrendingUp className="h-5 w-5" />,
@@ -75,7 +75,7 @@ const educationalArticles = [
     title: 'Industrial Plastic Manufacturing and Sustainability',
     category: 'Industry',
     content: 'How major manufacturers are redesigning products for circularity, reducing virgin plastic use by 80%, and implementing closed-loop production systems.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop',
     likes: 167,
     views: 3450,
     icon: <Factory className="h-5 w-5" />,
@@ -88,7 +88,7 @@ const educationalArticles = [
     title: 'Biodegradable Plastics: Promise and Reality',
     category: 'Innovation',
     content: 'Comprehensive analysis of bioplastics, PLA, PHA, and starch-based alternatives. Understanding decomposition conditions, industrial composting, and environmental trade-offs.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1463594373139-e5e8ac7b80e9?w=400&h=300&fit=crop',
     likes: 203,
     views: 3890,
     icon: <Leaf className="h-5 w-5" />,
@@ -101,7 +101,7 @@ const educationalArticles = [
     title: 'Global Plastic Policy and Legislation',
     category: 'Policy',
     content: 'Navigate the complex landscape of plastic regulations, international agreements, extended producer responsibility, and how policies drive recycling innovation.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop',
     likes: 134,
     views: 2670,
     icon: <Globe className="h-5 w-5" />,
@@ -114,7 +114,7 @@ const educationalArticles = [
     title: 'Energy Recovery from Non-Recyclable Plastics',
     category: 'Energy',
     content: 'When recycling isn\'t possible, learn about waste-to-energy systems, plasma gasification, and how non-recyclable plastics can still contribute to sustainability.',
-    image_url: '/placeholder.svg',
+    image_url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=300&fit=crop',
     likes: 145,
     views: 2980,
     icon: <Zap className="h-5 w-5" />,
@@ -169,6 +169,10 @@ export const EducationalContent: React.FC = () => {
                 src={article.image_url}
                 alt={article.title}
                 className="w-full h-40 md:h-48 object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-200"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  img.src = '/placeholder.svg';
+                }}
               />
               <div className="absolute top-3 left-3 flex gap-2">
                 <Badge variant="secondary" className="text-xs">
