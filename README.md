@@ -223,7 +223,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🆘 Support
 
-- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
 - **Community**: [Discord Server](https://discord.com/channels/1119885301872070706/1280461670979993613)
 - **Tutorials**: [YouTube Playlist](https://www.youtube.com/watch?v=9KHLTZaJcR8&list=PLbVHz4urQBZkJiAWdG8HWoJTdgEysigIO)
 - **Issues**: GitHub Issues tab for bug reports and feature requests
@@ -247,11 +246,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-**Project Link**: [https://lovable.dev/projects/65d27fee-ec1b-444d-8c11-dcbee8021b45](https://lovable.dev/projects/65d27fee-ec1b-444d-8c11-dcbee8021b45)
-
----
-
-*Built with ❤️ using Lovable AI - Making the world more sustainable, one scan at a time.*
+**Project Link**: https://reuscan.netlify.app/
 
 ## 🔄 Version History
 
