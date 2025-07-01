@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Recycle, AlertTriangle, Lightbulb, Users, TrendingUp, Factory, Leaf, Globe, Zap, Target, Award, Shield, Cpu } from 'lucide-react';
+import { ArticleDetail } from './ArticleDetail';
 
 const educationalArticles = [
   {
@@ -206,10 +206,23 @@ const categories = ['All', 'Basics', 'Environment', 'Tips', 'Community', 'Innova
 
 export const EducationalContent: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = React.useState('All');
+  const [selectedArticle, setSelectedArticle] = React.useState<typeof educationalArticles[0] | null>(null);
 
   const filteredArticles = selectedCategory === 'All' 
     ? educationalArticles 
     : educationalArticles.filter(article => article.category === selectedCategory);
+
+  const handleArticleClick = (article: typeof educationalArticles[0]) => {
+    setSelectedArticle(article);
+  };
+
+  const handleBackToList = () => {
+    setSelectedArticle(null);
+  };
+
+  if (selectedArticle) {
+    return <ArticleDetail article={selectedArticle} onBack={handleBackToList} />;
+  }
 
   return (
     <div className="space-y-6 p-4 md:p-0">
@@ -250,7 +263,11 @@ export const EducationalContent: React.FC = () => {
       {/* Educational Articles */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredArticles.map((article) => (
-          <Card key={article.id} className="hover:shadow-lg transition-all duration-200 cursor-pointer group">
+          <Card 
+            key={article.id} 
+            className="hover:shadow-lg transition-all duration-200 cursor-pointer group"
+            onClick={() => handleArticleClick(article)}
+          >
             <div className="relative overflow-hidden">
               <img
                 src={article.image_url}

@@ -4,10 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload, CheckCircle } from 'lucide-react';
+import { Upload, CheckCircle, Shield } from 'lucide-react';
+import { CommunityLogin } from './CommunityLogin';
+import { CommunityAdmin } from './CommunityAdmin';
 
 export const CommunityHub: React.FC = () => {
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
   const [classification, setClassification] = useState('');
@@ -28,6 +32,25 @@ export const CommunityHub: React.FC = () => {
     
     alert('Submission received! Our experts will review it within 24 hours and provide feedback to help improve our AI training data quality.');
   };
+
+  const handleAdminLogin = (email: string) => {
+    setAdminEmail(email);
+    setShowAdminLogin(false);
+  };
+
+  const handleAdminLogout = () => {
+    setAdminEmail(null);
+  };
+
+  // Show admin panel if logged in
+  if (adminEmail) {
+    return <CommunityAdmin adminEmail={adminEmail} onLogout={handleAdminLogout} />;
+  }
+
+  // Show admin login if requested
+  if (showAdminLogin) {
+    return <CommunityLogin onLogin={handleAdminLogin} />;
+  }
 
   return (
     <div className="space-y-6 p-4 md:p-0">
@@ -50,13 +73,23 @@ export const CommunityHub: React.FC = () => {
                 Help improve our AI accuracy with quality submissions and expert feedback
               </p>
             </div>
-            <Button 
-              onClick={() => setShowSubmissionForm(!showSubmissionForm)}
-              className="w-full md:w-auto"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Submit Item
-            </Button>
+            <div className="flex flex-col md:flex-row gap-2">
+              <Button 
+                onClick={() => setShowSubmissionForm(!showSubmissionForm)}
+                className="w-full md:w-auto"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Submit Item
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setShowAdminLogin(true)}
+                className="w-full md:w-auto flex items-center gap-2"
+              >
+                <Shield className="h-4 w-4" />
+                Admin Login
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
